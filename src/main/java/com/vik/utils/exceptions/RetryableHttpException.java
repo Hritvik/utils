@@ -1,4 +1,4 @@
-package com.vik.herald.exceptions;
+package com.vik.utils.exceptions;
 
 public class RetryableHttpException extends RuntimeException {
     private final int statusCode;

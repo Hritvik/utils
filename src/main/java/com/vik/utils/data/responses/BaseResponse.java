@@ -1,11 +1,8 @@
-package com.vik.herald.data.responses;
+package com.vik.utils.data.responses;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import com.fasterxml.jackson.annotation.*;
+import lombok.*;
+import lombok.experimental.*;
 
 @Data
 @SuperBuilder

@@ -1,4 +1,4 @@
-package com.vik.herald.data.request;
+package com.vik.utils.data.request;
 
 public class BaseRequest {
 }

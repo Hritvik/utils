@@ -1,4 +1,4 @@
-package com.vik.herald.exceptions;
+package com.vik.utils.exceptions;
 
 public class InternalServerErrorException extends DownStreamException {
     private final Integer statusCode;

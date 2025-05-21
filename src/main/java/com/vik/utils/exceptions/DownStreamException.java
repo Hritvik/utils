@@ -1,6 +1,6 @@
-package com.vik.herald.exceptions;
+package com.vik.utils.exceptions;
 
-import lombok.Getter;
+import lombok.*;
 
 @Getter
 public class DownStreamException extends RuntimeException {
