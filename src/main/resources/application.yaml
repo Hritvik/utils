@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: Utils
+  cloud:
+    config:
+      enabled: false

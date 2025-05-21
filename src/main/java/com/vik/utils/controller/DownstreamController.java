@@ -25,9 +25,10 @@ import java.util.concurrent.Future;
 @Slf4j
 @RestController
 @RequestMapping("/api/1.0/dev/downstream")
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class DownstreamController {
 
+    @Autowired
     private final ObjectMapper objectMapper;
 
     // Cache for method lookups

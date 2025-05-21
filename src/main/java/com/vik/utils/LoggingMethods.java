@@ -20,10 +20,13 @@ import java.util.Map;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class LoggingMethods {
+    @Autowired
     private final ObjectMapper objectMapper;
+    @Autowired
     private final Environment environment;
+    @Autowired
     private final MetricsService metricsService;
 
     public void logDownstreamRequest(String classMethodName,
