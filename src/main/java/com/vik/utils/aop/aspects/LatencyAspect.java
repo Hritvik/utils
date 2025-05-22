@@ -1,7 +1,6 @@
 package com.vik.utils.aop.aspects;
 
-import com.vik.herald.annotation.*;
-import com.vik.herald.utils.*;
+import com.vik.utils.*;
 import com.vik.utils.aop.annotations.*;
 import org.aspectj.lang.*;
 import org.aspectj.lang.annotation.*;
@@ -22,7 +21,7 @@ public class LatencyAspect {
     public Object measureLatency(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         MeasureLatency annotation = signature.getMethod().getAnnotation(MeasureLatency.class);
-        
+
         String metricName = annotation.metricName();
         if (metricName.isEmpty()) {
             metricName = signature.getDeclaringType().getSimpleName() + "." + signature.getName();
