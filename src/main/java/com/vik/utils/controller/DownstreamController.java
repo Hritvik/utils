@@ -1,26 +1,19 @@
 package com.vik.utils.controller;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
 import com.vik.utils.aop.annotations.*;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
-import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
+import lombok.extern.slf4j.*;
+import org.apache.commons.lang3.exception.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.http.*;
+import org.springframework.util.*;
 import org.springframework.web.bind.annotation.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+
+import java.lang.reflect.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 @Slf4j
 @RestController
@@ -34,8 +27,6 @@ public class DownstreamController {
     // Cache for method lookups
     private final Map<String, Method> methodCache = new ConcurrentHashMap<>();
     private final Map<String, Class<?>> parameterTypeCache = new ConcurrentHashMap<>();
-    private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    private final Validator validator = factory.getValidator();
 
     @PostMapping(value = "/{service}/{method}")
     @ControlleraInstrumentation(apiPath = "/{service}/{method}")
@@ -60,7 +51,7 @@ public class DownstreamController {
 
             // Get parameter type
             Class<?> parameterType = getParameterType(serviceMethod);
-            
+
 //            // Validate request structure against target type
 //            ValidationResult validationResult = validateRequestStructure(request, parameterType);
 //            if (!validationResult.isValid()) {
@@ -88,8 +79,7 @@ public class DownstreamController {
             Object response = serviceMethod.invoke(serviceInstance, mappedRequest);
 
             // Handle async response
-            if (response instanceof Future<?>) {
-                Future<?> future = (Future<?>) response;
+            if (response instanceof Future<?> future) {
                 Object result = future.get();
                 return ResponseEntity.ok(result);
             }
@@ -103,54 +93,6 @@ public class DownstreamController {
             log.error("Error processing request: {}", ExceptionUtils.getStackTrace(e));
             return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
         }
-    }
-
-    private ValidationResult validateRequestStructure(Map<String, Object> request, Class<?> targetType) {
-        if (request == null) {
-            return ValidationResult.invalid("Request body cannot be null");
-        }
-
-        try {
-            // Get all fields from the target type with their JSON property names
-            Map<String, String> requiredFields = new HashMap<>();
-            Map<String, String> allFields = new HashMap<>();
-            
-            for (Field field : targetType.getDeclaredFields()) {
-                String jsonPropertyName = getJsonPropertyName(field);
-                allFields.put(jsonPropertyName, field.getName());
-                
-                if (field.isAnnotationPresent(NotNull.class)) {
-                    requiredFields.put(jsonPropertyName, field.getName());
-                }
-            }
-
-            // Check for missing required fields
-            for (Map.Entry<String, String> entry : requiredFields.entrySet()) {
-                if (!request.containsKey(entry.getKey())) {
-                    return ValidationResult.invalid("Required field missing: " + entry.getKey());
-                }
-            }
-
-            // Check for unknown fields if strict validation is needed
-            Set<String> requestFields = new HashSet<>(request.keySet());
-            requestFields.removeAll(allFields.keySet());
-            if (!requestFields.isEmpty()) {
-                log.warn("Unknown fields in request: {}", requestFields);
-            }
-
-            return ValidationResult.valid();
-        } catch (Exception e) {
-            log.warn("Error during request structure validation: {}", e.getMessage());
-            return ValidationResult.invalid("Error validating request structure: " + e.getMessage());
-        }
-    }
-
-    private String getJsonPropertyName(Field field) {
-        JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
-        if (jsonProperty != null && !jsonProperty.value().isEmpty()) {
-            return jsonProperty.value();
-        }
-        return field.getName();
     }
 
     private Object getServiceInstance(String service) {
@@ -183,8 +125,8 @@ public class DownstreamController {
 
     private Class<?> getParameterType(Method method) {
         return parameterTypeCache.computeIfAbsent(
-            method.toString(),
-            k -> method.getParameterTypes()[0]
+                method.toString(),
+                k -> method.getParameterTypes()[0]
         );
     }
 
